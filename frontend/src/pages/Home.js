@@ -53,7 +53,7 @@ export default function Home() {
 
               <Feather
                 name={card.icon || "box"}
-                size={20}
+                size={28}
                 color="#4A90E2"
                 style={styles.icon}
               />
@@ -72,60 +72,60 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: "#e6e6e6",
-    },
+  container: {
+    flex: 1,
+    backgroundColor: "#e6e6e6",
+  },
+
+  content: {
+    padding: 15,
+  },
+
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+
+  hr: {
+    height: 1,
+    backgroundColor: "#ccc",
+    marginBottom: 20,
+  },
+
+  grid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+  },
+
+  card: {
+    width: (width - 60) / 3,
+    backgroundColor: "#f5f5f5",
+    borderRadius: 15,
+    padding: 15, 
+    marginBottom: 15,
   
-    content: {
-      padding: 10,
-    },
+    flexDirection: "row",
+    alignItems: "center",
   
-    title: {
-      fontSize: 20,
-      fontWeight: "bold",
-      marginBottom: 5,
-    },
-  
-    hr: {
-      height: 1,
-      backgroundColor: "#ccc",
-      marginBottom: 15,
-    },
-  
-    grid: {
-      flexDirection: "row",
-      flexWrap: "wrap",
-      justifyContent: "space-between",
-    },
-  
-    card: {
-      width: (width - 50) / 4,
-      backgroundColor: "#f5f5f5",
-      borderRadius: 12,
-      padding: 15,
-      marginBottom: 15,
-  
-      flexDirection: "row",
-      alignItems: "center",
-  
-      shadowColor: "#000",
-      shadowOpacity: 0.05,
-      shadowRadius: 3,
-      elevation: 2,
-    },
-  
-    icon: {
-      marginRight: 8,
-    },
-  
-    cardTitle: {
-      fontSize: 12,
-      fontWeight: "600",
-    },
-  
-    cardText: {
-      fontSize: 10,
-      color: "#666",
-    },
-  });
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+
+  icon: {
+    marginRight: 12,
+  },
+
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+  },
+
+  cardText: {
+    fontSize: 13,
+    color: "#666",
+  },
+});

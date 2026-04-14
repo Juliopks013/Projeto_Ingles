@@ -5,7 +5,7 @@ export default function Navbar() {
   return (
     <View style={styles.navbar}>
       
-      {/* WRAPPER */}
+      {/* LOGO */}
       <View style={styles.logoWrapper}>
         <View style={styles.logoContainer}>
           <Image
@@ -15,12 +15,14 @@ export default function Navbar() {
         </View>
       </View>
 
+      {/* INPUT */}
       <TextInput
         placeholder="Pesquise palavras"
         placeholderTextColor="#999"
         style={styles.input}
       />
 
+      {/* BOTÃO */}
       <TouchableOpacity style={styles.button}>
         <Text style={styles.buttonText}>VER CATEGORIAS</Text>
       </TouchableOpacity>
@@ -31,61 +33,60 @@ export default function Navbar() {
 
 const styles = StyleSheet.create({
   navbar: {
-    height: 80,
+    height: 100,
     backgroundColor: "#3B57A1",
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 10,
-    overflow: "hidden",
+    paddingHorizontal: 20,
   },
 
   logoWrapper: {
-    width: 60,
-    height: 80,
+    width: 70,
+    height: 100,
     justifyContent: "center",
     marginRight: 10,
   },
 
   logoContainer: {
-    width: 90,
-    height: 90,
+    width: 110,
+    height: 110,
     backgroundColor: "#E5E5E5",
-    borderRadius: 45,
+    borderRadius: 55,
 
     justifyContent: "center",
     alignItems: "center",
 
     position: "absolute",
-    left: -45,
-
+    left: -50,
   },
 
   logo: {
-    width: 30,
-    height: 30,
+    width: 40,
+    height: 40,
     resizeMode: "contain",
-    transform: [{ translateX: 5 }],
+    transform: [{ translateX: 10 }],
   },
 
   input: {
     flex: 1,
-    height: 40,
+    height: 50,
     backgroundColor: "#E5E5E5",
-    borderRadius: 20,
-    paddingHorizontal: 15,
-    marginRight: 10,
+    borderRadius: 25,
+    paddingHorizontal: 20,
+    marginRight: 15,
+    fontSize: 16,
   },
 
   button: {
     backgroundColor: "#fff",
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderRadius: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 25,
   },
 
   buttonText: {
     color: "#3B57A1",
     fontWeight: "bold",
-    fontSize: 12,
+    fontSize: 14,
   },
 });
