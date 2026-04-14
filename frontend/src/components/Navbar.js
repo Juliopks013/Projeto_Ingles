@@ -5,11 +5,14 @@ export default function Navbar() {
   return (
     <View style={styles.navbar}>
       
-      <View style={styles.logoContainer}>
-        <Image
-          source={require('../../assets/logo.png')}
-          style={styles.logo}
-        />
+      {/* WRAPPER */}
+      <View style={styles.logoWrapper}>
+        <View style={styles.logoContainer}>
+          <Image
+            source={require('../../assets/logo.png')}
+            style={styles.logo}
+          />
+        </View>
       </View>
 
       <TextInput
@@ -33,22 +36,35 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 10,
+    overflow: "hidden",
+  },
+
+  logoWrapper: {
+    width: 60,
+    height: 80,
+    justifyContent: "center",
+    marginRight: 10,
   },
 
   logoContainer: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
+    width: 90,
+    height: 90,
     backgroundColor: "#E5E5E5",
+    borderRadius: 45,
+
     justifyContent: "center",
     alignItems: "center",
-    marginRight: 10,
+
+    position: "absolute",
+    left: -45,
+
   },
 
   logo: {
     width: 30,
     height: 30,
     resizeMode: "contain",
+    transform: [{ translateX: 5 }],
   },
 
   input: {
