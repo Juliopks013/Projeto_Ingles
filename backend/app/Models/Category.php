@@ -1,12 +1,12 @@
 <?php
     use Illuminate\Database\Eloquent\Model;
 
-    class Tag extends Model
+    class Category extends Model
     {
         protected $fillable = ['name'];
 
         public function words()
         {
-            return $this->belongsToMany(Word::class, 'words_tags');
+            return $this->hasMany(Word::class);
         }
     }

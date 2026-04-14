@@ -1,10 +1,14 @@
 <?php
+    use Illuminate\Database\Eloquent\Model;
 
-namespace App\Models;
+    class WordTag extends Model
+    {
+        protected $table = 'words_tags';
 
-use Illuminate\Database\Eloquent\Model;
+        public $timestamps = false; // geralmente pivot não usa timestamps
 
-class PalavraTag extends Model
-{
-    //
-}
+        protected $fillable = [
+            'word_id',
+            'tag_id'
+        ];
+    }
