@@ -5,7 +5,7 @@ export default function Navbar() {
   return (
     <View style={styles.navbar}>
       
-      {/* LOGO */}
+ 
       <View style={styles.logoWrapper}>
         <View style={styles.logoContainer}>
           <Image
@@ -15,7 +15,6 @@ export default function Navbar() {
         </View>
       </View>
 
-      {/* INPUT */}
       <TextInput
         placeholder="Pesquise palavras"
         placeholderTextColor="#999"

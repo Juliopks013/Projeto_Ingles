@@ -10,12 +10,12 @@ import {
 } from "react-native";
 import Navbar from "../components/Navbar";
 import { Feather } from "@expo/vector-icons";
+import * as Speech from "expo-speech";
 
 const { width } = Dimensions.get("window");
 
 export default function Home() {
   const [cards, setCards] = useState([]);
-
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
 
@@ -48,6 +48,7 @@ export default function Home() {
   function closeModal() {
     setModalVisible(false);
     setSelectedCard(null);
+    Speech.stop();
   }
 
   function gerarPronuncia(word) {
@@ -57,14 +58,20 @@ export default function Home() {
       upload: "ap-loud",
       image: "i-me-dji",
       cloud: "cláud",
-      cursos: "cur-sos",
-      projetos: "pro-je-tos",
-      comunidade: "co-mu-ni-da-de",
-      code: "koud",
-      users: "iú-zers",
     };
 
     return dict[word.toLowerCase()] || "pronúncia não disponível";
+  }
+
+  function falar() {
+    if (!selectedCard) return;
+
+    const texto = `${selectedCard.title}. ${selectedCard.desc}`;
+
+    Speech.speak(texto, {
+      language: "en-US",
+      rate: 0.9,
+    });
   }
 
   return (
@@ -108,33 +115,39 @@ export default function Home() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalBox}>
 
-            {/* BOTÃO X */}
-            <TouchableOpacity
-              onPress={closeModal}
-              style={styles.closeIcon}
-            >
+            {/* X */}
+            <TouchableOpacity onPress={closeModal} style={styles.closeIcon}>
               <Text style={styles.closeIconText}>✕</Text>
             </TouchableOpacity>
 
             {selectedCard && (
               <>
-                <Text style={styles.modalTitle}>
-                  {selectedCard.title}
+
+                <View style={styles.modalHeader}>
+                  <Feather
+                    name={selectedCard.icon || "cloud"}
+                    size={40}
+                    color="#4A90E2"
+                  />
+
+                  <View style={{ marginLeft: 10 }}>
+                    <Text style={styles.modalTitle}>
+                      {selectedCard.title} ({gerarPronuncia(selectedCard.title)})
+                    </Text>
+                    <Text style={styles.modalSubtitleSmall}>
+                      {selectedCard.desc}
+                    </Text>
+                  </View>
+                </View>
+
+                <Text style={styles.modalDescription}>
+                  Descrição: Serviços e armazenamento via internet.
                 </Text>
 
-                <Text style={styles.modalSubtitle}>
-                  Significado:
-                </Text>
-                <Text style={styles.modalText}>
-                  {selectedCard.desc}
-                </Text>
-
-                <Text style={styles.modalSubtitle}>
-                  Como fala:
-                </Text>
-                <Text style={styles.modalText}>
-                  {gerarPronuncia(selectedCard.title)}
-                </Text>
+                <TouchableOpacity style={styles.audioButton} onPress={falar}>
+                  <Feather name="play" size={20} color="#fff" />
+                  <Text style={styles.audioText}>Escutar</Text>
+                </TouchableOpacity>
               </>
             )}
           </View>
@@ -207,44 +220,58 @@ const styles = StyleSheet.create({
 
   modalBox: {
     width: "30%",
-    minHeight: 300,
     backgroundColor: "#fff",
-    borderRadius: 18,
-    padding: 22,
-    paddingTop: 35,
-    elevation: 8,
+    borderRadius: 20,
+    padding: 25,
+    elevation: 10,
   },
 
   closeIcon: {
     position: "absolute",
     top: 10,
     right: 12,
-    padding: 5,
   },
 
   closeIconText: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#333",
+  },
+
+  modalHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
   },
 
   modalTitle: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: "bold",
-    marginBottom: 15,
-    textAlign: "center",
   },
 
-  modalSubtitle: {
+  modalSubtitleSmall: {
     fontSize: 14,
-    fontWeight: "600",
-    marginTop: 12,
-    color: "#444",
+    color: "#777",
   },
 
-  modalText: {
-    fontSize: 15,
-    color: "#555",
-    marginTop: 4,
+  modalDescription: {
+    fontSize: 16,
+    color: "#4A90E2",
+    marginBottom: 30,
+  },
+
+  audioButton: {
+    backgroundColor: "#3B5BA9",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 15,
+    borderRadius: 30,
+    gap: 10,
+  },
+
+  audioText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "600",
   },
 });
