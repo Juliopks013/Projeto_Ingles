@@ -18,12 +18,17 @@ export default function Home() {
   const [cards, setCards] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
+  const [columns, setColumns] = useState(1);
+  const [search, setSearch] = useState("");
 
+  // =========================
+  // CARREGAR DADOS
+  // =========================
   useEffect(() => {
     fetch("http://127.0.0.1:8000/api/home")
       .then((res) => res.json())
       .then((data) => {
-        if (data.cards) {
+        if (data?.cards) {
           setCards(data.cards);
         } else {
           throw new Error("Sem dados");
@@ -31,15 +36,37 @@ export default function Home() {
       })
       .catch(() => {
         setCards([
-          { title: "Download", desc: "baixar", icon: "download" },
-          { title: "Upload", desc: "enviar", icon: "upload" },
-          { title: "Image", desc: "imagem", icon: "image" },
-          { title: "Cloud", desc: "nuvem", icon: "cloud" },
-          { title: "Feedback", desc: "avaliação", icon: "message-circle" },
+          { word: "Download", translation: "baixar", desc: "baixar arquivo", icon: "download" },
+          { word: "Upload", translation: "enviar", desc: "enviar arquivo", icon: "upload" },
+          { word: "Image", translation: "imagem", desc: "imagem", icon: "image" },
+          { word: "Cloud", translation: "nuvem", desc: "armazenamento", icon: "cloud" },
+          { word: "Feedback", translation: "avaliação", desc: "opinião", icon: "message-circle" },
         ]);
       });
   }, []);
 
+  // =========================
+  // RESPONSIVIDADE
+  // =========================
+  useEffect(() => {
+    function updateLayout() {
+      const w = Dimensions.get("window").width;
+
+      if (w >= 1200) setColumns(5);
+      else if (w >= 900) setColumns(3);
+      else if (w >= 600) setColumns(2);
+      else setColumns(1);
+    }
+
+    updateLayout();
+
+    const subscription = Dimensions.addEventListener("change", updateLayout);
+    return () => subscription?.remove();
+  }, []);
+
+  // =========================
+  // MODAL CONTROL
+  // =========================
   function openModal(card) {
     setSelectedCard(card);
     setModalVisible(true);
@@ -48,30 +75,56 @@ export default function Home() {
   function closeModal() {
     setModalVisible(false);
     setSelectedCard(null);
-    Speech.stop();
+
+    if (Speech?.stop) Speech.stop();
   }
 
+  // =========================
+  // AUDIO
+  // =========================
   function falar() {
-    if (!selectedCard) return;
+    if (!selectedCard?.word) return;
 
-    const texto = `${selectedCard.word}`;
-
-    Speech.speak(texto, {
+    Speech.speak(selectedCard.word, {
       language: "en-US",
       rate: 0.9,
     });
   }
 
+  // =========================
+  // SEARCH (case + accent safe)
+  // =========================
+  const normalizeText = (text = "") =>
+    text
+      .toString()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
+
+  const filteredCards = cards.filter((card) => {
+    const text = `
+      ${card.word || ""}
+      ${card.translation || ""}
+      ${card.desc || ""}
+    `;
+
+    return normalizeText(text).includes(normalizeText(search));
+  });
+
   return (
     <View style={styles.container}>
-      <Navbar />
+      <Navbar search={search} setSearch={setSearch} />
+
+      {/* <Text style={{ marginBottom: 10, fontWeight: "bold" }}>
+          Columns: {columns}
+        </Text> */}
 
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.word}>Uso Comum</Text>
         <View style={styles.hr} />
 
         <View style={styles.grid}>
-          {cards.map((card, index) => (
+          {filteredCards.map((card, index) => (
             <TouchableOpacity
               key={index}
               style={styles.card}
@@ -155,12 +208,6 @@ const styles = StyleSheet.create({
     padding: 15,
   },
 
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
-
   hr: {
     height: 1,
     backgroundColor: "#ccc",
@@ -173,8 +220,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
 
+  // 🔥 RESPONSIVO REAL
   card: {
-    width: (width - 60) / 5,
+    width: "30%",
     backgroundColor: "#f5f5f5",
     borderRadius: 15,
     padding: 15,
@@ -191,6 +239,8 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 16,
     fontWeight: "600",
+    flexShrink: 1,
+    flexWrap: "wrap",
   },
 
   cardText: {
@@ -206,8 +256,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
+  // 🔥 responsivo (mobile + tablet)
   modalBox: {
-    width: "30%",
+    width: "50%",
+    maxWidth: 500, // desktop/tablet
     backgroundColor: "#fff",
     borderRadius: 20,
     padding: 25,
