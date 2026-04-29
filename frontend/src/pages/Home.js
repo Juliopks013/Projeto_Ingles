@@ -51,22 +51,10 @@ export default function Home() {
     Speech.stop();
   }
 
-  function gerarPronuncia(word) {
-    const dict = {
-      feedback: "fi-di-be-ki",
-      download: "daun-loud",
-      upload: "ap-loud",
-      image: "i-me-dji",
-      cloud: "cláud",
-    };
-
-    return dict[word.toLowerCase()] || "pronúncia não disponível";
-  }
-
   function falar() {
     if (!selectedCard) return;
 
-    const texto = `${selectedCard.title}. ${selectedCard.desc}`;
+    const texto = `${selectedCard.word}`;
 
     Speech.speak(texto, {
       language: "en-US",
@@ -79,7 +67,7 @@ export default function Home() {
       <Navbar />
 
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>Uso Comum</Text>
+        <Text style={styles.word}>Uso Comum</Text>
         <View style={styles.hr} />
 
         <View style={styles.grid}>
@@ -97,8 +85,8 @@ export default function Home() {
               />
 
               <View>
-                <Text style={styles.cardTitle}>{card.title}</Text>
-                <Text style={styles.cardText}>{card.desc}</Text>
+                <Text style={styles.cardTitle}>{card.word} ({card.pronunciation})</Text>
+                <Text style={styles.cardText}>Tradução: {card.translation}</Text>
               </View>
             </TouchableOpacity>
           ))}
@@ -125,23 +113,23 @@ export default function Home() {
 
                 <View style={styles.modalHeader}>
                   <Feather
-                    name={selectedCard.icon || "cloud"}
+                    name={selectedCard.icon || "box"}
                     size={40}
                     color="#4A90E2"
                   />
 
                   <View style={{ marginLeft: 10 }}>
                     <Text style={styles.modalTitle}>
-                      {selectedCard.title} ({gerarPronuncia(selectedCard.title)})
+                      {selectedCard.word} ({selectedCard.pronunciation})
                     </Text>
                     <Text style={styles.modalSubtitleSmall}>
-                      {selectedCard.desc}
+                      Tradução: {selectedCard.translation}
                     </Text>
                   </View>
                 </View>
 
                 <Text style={styles.modalDescription}>
-                  Descrição: Serviços e armazenamento via internet.
+                  {selectedCard.desc}
                 </Text>
 
                 <TouchableOpacity style={styles.audioButton} onPress={falar}>
@@ -186,7 +174,7 @@ const styles = StyleSheet.create({
   },
 
   card: {
-    width: (width - 60) / 3,
+    width: (width - 60) / 5,
     backgroundColor: "#f5f5f5",
     borderRadius: 15,
     padding: 15,

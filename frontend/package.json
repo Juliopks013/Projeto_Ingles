@@ -12,6 +12,7 @@
     "expo": "~55.0.6",
     "expo-speech": "~55.0.13",
     "expo-status-bar": "~55.0.4",
+    "feather-icons": "^4.29.2",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-native": "0.83.2",
