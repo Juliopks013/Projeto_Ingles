@@ -18,15 +18,11 @@ export default function Home() {
   const [cards, setCards] = useState([]);
   const [selectedCard, setSelectedCard] = useState(null);
   const [search, setSearch] = useState("");
-
-  // Inicia com SCREEN_WIDTH para garantir que comece totalmente escondido à direita
   const [panelAnim] = useState(new Animated.Value(SCREEN_WIDTH));
 
-  // Lógica de Responsividade centralizada
   const isMobile = SCREEN_WIDTH < 600;
   const isTablet = SCREEN_WIDTH >= 600 && SCREEN_WIDTH < 1024;
 
-  // O SidePanel ocupará 1/3 em telas grandes, 1/2 em tablets e 1/1 em mobile
   const panelWidth = isMobile
     ? SCREEN_WIDTH
     : isTablet
@@ -37,42 +33,60 @@ export default function Home() {
     fetch("http://127.0.0.1:8000/api/home")
       .then((res) => res.json())
       .then((data) => {
-        if (data?.cards) setCards(data.cards);
+        if (data?.cards) setCards(sortCards(data.cards));
       })
       .catch(() => {
-        // Mock de dados para teste caso a API falhe
-        setCards([
+        const mockData = [
           {
-            word: "Download",
-            translation: "baixar",
-            desc: "Transferir dados de um servidor.",
-            icon: "download",
-            pronunciation: "/ˌdaʊnˈloʊd/",
-          },
-          {
-            word: "Upload",
-            translation: "enviar",
-            desc: "Enviar dados para um servidor.",
-            icon: "upload",
-            pronunciation: "/ˈʌpˌloʊd/",
+            word: "API",
+            translation: "Interface de Prog.",
+            desc: "Ponte entre softwares.",
+            icon: "code",
+            pronunciation: "/ˌeɪ.piːˈaɪ/",
           },
           {
             word: "Cloud",
             translation: "nuvem",
-            desc: "Armazenamento remoto de dados.",
+            desc: "Servidores remotos.",
             icon: "cloud",
             pronunciation: "/klaʊd/",
           },
           {
             word: "Database",
             translation: "banco de dados",
-            desc: "Conjunto estruturado de dados.",
+            desc: "Dados estruturados.",
             icon: "database",
             pronunciation: "/ˈdeɪtəbeɪs/",
           },
-        ]);
+          {
+            word: "Deploy",
+            translation: "implantar",
+            desc: "Colocar em produção.",
+            icon: "send",
+            pronunciation: "/dɪˈplɔɪ/",
+          },
+          {
+            word: "Download",
+            translation: "baixar",
+            desc: "Baixar arquivos.",
+            icon: "download",
+            pronunciation: "/ˌdaʊnˈloʊd/",
+          },
+          {
+            word: "Framework",
+            translation: "estrutura",
+            desc: "Conjunto de ferramentas.",
+            icon: "layers",
+            pronunciation: "/ˈfreɪmwɜːrk/",
+          },
+        ];
+        setCards(sortCards(mockData));
       });
   }, []);
+
+  const sortCards = (list) => {
+    return [...list].sort((a, b) => a.word.localeCompare(b.word));
+  };
 
   function togglePanel(card) {
     if (card) {
@@ -103,82 +117,113 @@ export default function Home() {
     return normalizeText(content).includes(normalizeText(search));
   });
 
+  // Agrupa os itens por letra inicial
+  const groupCardsByLetter = (data) => {
+    return data.reduce((groups, card) => {
+      const letter = card.word.charAt(0).toUpperCase();
+      if (!groups[letter]) groups[letter] = [];
+      groups[letter].push(card);
+      return groups;
+    }, {});
+  };
+
+  const renderContent = () => {
+    // Se estiver pesquisando, renderiza grid único
+    if (search.length > 0) {
+      return (
+        <View style={styles.grid}>
+          {filteredCards.map((card, index) => renderSingleCard(card, index))}
+        </View>
+      );
+    }
+
+    // Se não, renderiza seções com sub-grids
+    const grouped = groupCardsByLetter(filteredCards);
+    return Object.keys(grouped)
+      .sort()
+      .map((letter) => (
+        <View key={letter} style={styles.sectionContainer}>
+          <View style={styles.alphabetHeader}>
+            <Text style={styles.alphabetText}>{letter}</Text>
+            <View style={styles.alphabetLine} />
+          </View>
+          <View style={styles.grid}>
+            {grouped[letter].map((card, index) =>
+              renderSingleCard(card, `${letter}-${index}`),
+            )}
+          </View>
+        </View>
+      ));
+  };
+
+  const renderSingleCard = (card, index) => (
+    <TouchableOpacity
+      key={index}
+      style={[
+        styles.card,
+        {
+          width:
+            selectedCard && !isMobile
+              ? "48%"
+              : SCREEN_WIDTH > 1024
+                ? "31%"
+                : "100%",
+        },
+        selectedCard?.word === card.word && styles.cardActive,
+      ]}
+      onPress={() => togglePanel(card)}
+    >
+      <View
+        style={[
+          styles.cardIconWrapper,
+          selectedCard?.word === card.word && styles.cardIconWrapperActive,
+        ]}
+      >
+        <Feather
+          name={card.icon || "box"}
+          size={22}
+          color={selectedCard?.word === card.word ? "#FFF" : "#3B57A1"}
+        />
+      </View>
+
+      <View style={{ flex: 1 }}>
+        <Text
+          style={[
+            styles.cardTitle,
+            selectedCard?.word === card.word && { color: "#fff" },
+          ]}
+        >
+          {card.word}
+        </Text>
+        <Text
+          style={[
+            styles.cardSubtitle,
+            selectedCard?.word === card.word && { color: "#dae8ff" },
+          ]}
+        >
+          {card.translation}
+        </Text>
+      </View>
+
+      {!selectedCard && <Feather name="chevron-right" size={18} color="#ccc" />}
+    </TouchableOpacity>
+  );
+
   return (
     <View style={styles.container}>
       <Navbar search={search} setSearch={setSearch} isLoggedIn={true} />
-
       <View style={styles.mainLayout}>
         <ScrollView
           contentContainerStyle={[
             styles.scrollContent,
-            // Apenas "empurra" o conteúdo se NÃO for mobile
             !isMobile && selectedCard && { marginRight: panelWidth },
           ]}
           showsVerticalScrollIndicator={false}
         >
           <Text style={styles.sectionTitle}>Biblioteca de Termos</Text>
-
-          <View style={styles.grid}>
-            {filteredCards.map((card, index) => (
-              <TouchableOpacity
-                key={index}
-                style={[
-                  styles.card,
-                  {
-                    // Lógica de largura dos cards:
-                    // Se o painel abrir no Desktop: 2 colunas (48%)
-                    // Se estiver fechado no Desktop: 3 colunas (31%)
-                    // Tablet/Mobile: 1 coluna (100%)
-                    width:
-                      selectedCard && !isMobile
-                        ? "48%"
-                        : SCREEN_WIDTH > 1024
-                          ? "31%"
-                          : "100%",
-                  },
-                  selectedCard?.word === card.word && styles.cardActive,
-                ]}
-                onPress={() => togglePanel(card)}
-              >
-                <View style={styles.cardIconWrapper}>
-                  <Feather
-                    name={card.icon || "box"}
-                    size={22}
-                    color={
-                      selectedCard?.word === card.word ? "#fff" : "#3B57A1"
-                    }
-                  />
-                </View>
-
-                <View style={{ flex: 1 }}>
-                  <Text
-                    style={[
-                      styles.cardTitle,
-                      selectedCard?.word === card.word && { color: "#fff" },
-                    ]}
-                  >
-                    {card.word}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.cardSubtitle,
-                      selectedCard?.word === card.word && { color: "#dae8ff" },
-                    ]}
-                  >
-                    {card.translation}
-                  </Text>
-                </View>
-
-                {/* Mostra a seta apenas se nenhum card estiver selecionado para limpar o visual */}
-                {!selectedCard && (
-                  <Feather name="chevron-right" size={18} color="#ccc" />
-                )}
-              </TouchableOpacity>
-            ))}
-          </View>
+          {renderContent()}
         </ScrollView>
 
-        {/* Painel Lateral Independente */}
         <SidePanel
           selectedCard={selectedCard}
           panelAnim={panelAnim}
@@ -190,28 +235,27 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F0F2F5",
-  },
-  mainLayout: {
-    flex: 1,
-    flexDirection: "row",
-    overflow: "hidden", // Garante que o painel não crie barra de rolagem horizontal
-  },
-  scrollContent: {
-    padding: 25,
-    // Transição suave para o redimensionamento na Web
-    transitionProperty: "margin-right, width",
-    transitionDuration: "0.3s",
-  },
+  container: { flex: 1, backgroundColor: "#F0F2F5" },
+  mainLayout: { flex: 1, flexDirection: "row", overflow: "hidden" },
+  scrollContent: { padding: 25 },
   sectionTitle: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "800",
     color: "#1A1A1A",
-    marginBottom: 20,
-    letterSpacing: -0.5,
+    marginBottom: 10,
   },
+
+  sectionContainer: { marginBottom: 30 },
+  alphabetHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+    marginBottom: 15,
+    gap: 15,
+  },
+  alphabetText: { fontSize: 22, fontWeight: "900", color: "#3B57A1" },
+  alphabetLine: { flex: 1, height: 1.5, backgroundColor: "#E0E0E0" },
+
   grid: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -229,14 +273,13 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
+    shadowRadius: 8,
+    elevation: 3,
   },
   cardActive: {
     backgroundColor: "#3B57A1",
     borderColor: "#3B57A1",
-    elevation: 6,
-    transform: [{ scale: 1.02 }], // Leve destaque ao selecionar
+    transform: [{ scale: 1.02 }],
   },
   cardIconWrapper: {
     width: 48,
@@ -247,15 +290,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 15,
   },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
+  cardIconWrapperActive: {
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
   },
-  cardSubtitle: {
-    fontSize: 14,
-    color: "#777",
-    marginTop: 2,
-    textTransform: "capitalize",
-  },
+  cardTitle: { fontSize: 18, fontWeight: "bold", color: "#333" },
+  cardSubtitle: { fontSize: 14, color: "#777", marginTop: 2 },
 });

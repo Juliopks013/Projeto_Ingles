@@ -27,9 +27,25 @@ export default function SidePanel({ selectedCard, panelAnim, onClose }) {
     return SCREEN_WIDTH * 0.333; // Desktop: ~33.3% (Exatamente 1 coluna de cards)
   };
 
-  function falar() {
+  // FUNÇÃO DE VOZ CORRIGIDA
+  async function falar() {
     if (!selectedCard?.word) return;
-    Speech.speak(selectedCard.word, { language: "en-US", rate: 0.85 });
+
+    // 1. Verifica se já está falando e para (evita sobreposição)
+    const isSpeaking = await Speech.isSpeakingAsync();
+    if (isSpeaking) {
+      await Speech.stop();
+    }
+
+    // 2. Tenta forçar o idioma en-US
+    // Adicionamos um pequeno delay opcional para garantir que o 'stop' processou
+    Speech.speak(selectedCard.word, {
+      language: "en-US",
+      pitch: 1.0,
+      rate: 0.85,
+      // OnError ajuda a debugar se o pacote de voz não existir
+      onError: (error) => console.log("Erro na voz:", error),
+    });
   }
 
   return (
