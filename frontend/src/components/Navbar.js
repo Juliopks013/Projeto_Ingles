@@ -1,27 +1,28 @@
 import React from "react";
 import { View, TextInput, StyleSheet, Image, TouchableOpacity, Text } from "react-native";
 
-export default function Navbar({ search, setSearch }) {
+export default function Navbar() {
   return (
     <View style={styles.navbar}>
       
+      {/* LOGO */}
       <View style={styles.logoWrapper}>
         <View style={styles.logoContainer}>
           <Image
-            source={require('../../assets/logo.svg')}
+            source={require('../../assets/logo.png')}
             style={styles.logo}
           />
         </View>
       </View>
 
+      {/* INPUT */}
       <TextInput
         placeholder="Pesquise palavras"
         placeholderTextColor="#999"
         style={styles.input}
-        value={search}
-        onChangeText={setSearch}
       />
 
+      {/* BOTÃO */}
       <TouchableOpacity style={styles.button}>
         <Text style={styles.buttonText}>VER CATEGORIAS</Text>
       </TouchableOpacity>
@@ -36,52 +37,56 @@ const styles = StyleSheet.create({
     backgroundColor: "#3B57A1",
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 12,
+    paddingHorizontal: 20,
   },
 
   logoWrapper: {
-    width: 60,
+    width: 70,
     height: 100,
     justifyContent: "center",
     marginRight: 10,
   },
 
   logoContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 110,
+    height: 110,
+    backgroundColor: "#E5E5E5",
+    borderRadius: 55,
+
     justifyContent: "center",
     alignItems: "center",
+
     position: "absolute",
-    left: -30,
+    left: -50,
   },
 
   logo: {
-    width: 35,
-    height: 35,
+    width: 40,
+    height: 40,
     resizeMode: "contain",
+    transform: [{ translateX: 10 }],
   },
 
   input: {
     flex: 1,
-    height: 45,
+    height: 50,
     backgroundColor: "#E5E5E5",
     borderRadius: 25,
-    paddingHorizontal: 15,
-    marginRight: 10,
-    fontSize: 14,
+    paddingHorizontal: 20,
+    marginRight: 15,
+    fontSize: 16,
   },
 
   button: {
     backgroundColor: "#fff",
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 25,
   },
 
   buttonText: {
     color: "#3B57A1",
     fontWeight: "bold",
-    fontSize: 12,
+    fontSize: 14,
   },
 });
